@@ -11,7 +11,7 @@ num_classes = 100
 batch_size = 16 
 nb_epoch = 50
 
-X_train, Y_train, X_valid, Y_valid = load_cifar100_data()
+X_train, Y_train, X_valid, Y_valid = load_cifar100_data(img_rows, img_cols)
 del X_train, Y_train
 
 # Model loading
