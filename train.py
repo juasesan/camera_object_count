@@ -11,6 +11,7 @@ from keras import backend as K
 
 #K.set_image_dim_ordering('tf')
 
+
 def resnet50_model(num_classes):
 	
 	
@@ -43,45 +44,46 @@ def resnet50_model(num_classes):
 
 if __name__ == '__main__':
 
-    # Example to fine-tune on samples from Cifar100
+	# Example to fine-tune on samples from Cifar100
 
-    img_rows, img_cols = 224, 224 # Resolution of inputs
-    channel = 3
-    num_classes = 100 
-    batch_size = 16 
-    nb_epoch = 50
+	img_rows, img_cols = 224, 224 # Resolution of inputs
+	channel = 3
+	num_classes = 100 
+	batch_size = 16 
+	nb_epoch = 50
 
-    # Load Cifar10 data. Please implement your own load_data() module for your own dataset
-    X_train, Y_train, X_valid, Y_valid = load_cifar100_data(img_rows, img_cols)
+	# Load Cifar10 data. Please implement your own load_data() module for your own dataset
+	X_train, Y_train, X_valid, Y_valid = load_cifar100_data(img_rows, img_cols)
 
-    # Load our model
-    model = resnet50_model(num_classes)
+	# Load our model
+	model = resnet50_model(num_classes)
 
-    # Start Fine-tuning
-    model.fit(X_train, Y_train,
-              batch_size=batch_size,
-              epochs=nb_epoch,
-              shuffle=True,
-              verbose=1,
-              validation_data=(X_valid, Y_valid),
-              )
+	# Start Fine-tuning
+	model.fit(
+		X_train, 
+		Y_train,
+		batch_size=batch_size,
+		epochs=nb_epoch,
+		shuffle=True,
+		verbose=1,
+		validation_data=(X_valid, Y_valid),
+	)
 
-    ## save model
-    model_json = model.to_json()
-    with open("cifar100_resnet50.json", "w") as json_file:
-    	json_file.write(model_json)
+	## save model
+	model.save_weights("cifar100_resnet50.h5")
+	model_json = model.to_json()
+	with open("cifar100_resnet50.json", "w") as json_file:
+		json_file.write(model_json)
+	print("Saved model to disk")
 	
-    model.save_weights("cifar100_resnet50.h5")
-    print("Saved model to disk")
-    
-    # Make predictions
-    predictions_valid = model.predict(X_valid, batch_size=batch_size, verbose=1)
+	# Make predictions
+	predictions_valid = model.predict(X_valid, batch_size=batch_size, verbose=1)
 
-    # Cross-entropy loss score
-    scores = log_loss(Y_valid, predictions_valid)
-    print("Cross-entropy loss score",scores)
-    
-    ## evaluate modelon test data:
-    score = model.evaluate(X_valid, Y_valid, verbose=0)
-    print("%s: %.2f%%" % (model.metrics_names[1], score[1]*100))
+	# Cross-entropy loss score
+	scores = log_loss(Y_valid, predictions_valid)
+	print("Cross-entropy loss score",scores)
+	
+	## evaluate modelon test data:
+	score = model.evaluate(X_valid, Y_valid, verbose=0)
+	print("%s: %.2f%%" % (model.metrics_names[1], score[1]*100))
 
